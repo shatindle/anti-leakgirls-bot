@@ -1,0 +1,1 @@
+This directory needs to be writable by the application.  Porn images will be downloaded, assessed, and deleted.

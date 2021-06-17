@@ -1,0 +1,7 @@
+{
+    "userAgent": "UNIQUE USER AGENT (MAKE IT UP - HELPS REDDIT KNOW IT'S YOU IF THEY NEED TO SHUT OFF ACCESS)",
+    "clientId": "REDDIT CLIENT ID FOR SCRIPT",
+    "clientSecret": "REDDIT CLIENT SECRET FOR SCRIPT",
+    "refreshToken": "REDDIT REFRESH TOKEN - YOU WILL NEED TO GENERATE THIS",
+    "scope": "read report"
+}

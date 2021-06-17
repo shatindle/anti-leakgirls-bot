@@ -1,0 +1,34 @@
+{
+  "name": "anti-leakgirls",
+  "version": "1.0.0",
+  "description": "Bot to combat the leakgirls reddit problem",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shatindle/anti-leakgirls.git"
+  },
+  "keywords": [
+    "reddit",
+    "bot",
+    "leakgirls"
+  ],
+  "author": "shatindle",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/shatindle/anti-leakgirls/issues"
+  },
+  "homepage": "https://github.com/shatindle/anti-leakgirls#readme",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "calipers": "^2.0.1",
+    "calipers-jpeg": "^2.0.0",
+    "calipers-png": "^2.0.0",
+    "jimp": "^0.16.1",
+    "sharp": "^0.28.3",
+    "snoowrap": "^1.23.0",
+    "tesseract.js": "^2.1.4"
+  }
+}
