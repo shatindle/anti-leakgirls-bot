@@ -4,6 +4,7 @@ const resizeImage = require("./resizeImage");
 const fs = require('fs');
 const RedditApi = require("snoowrap");
 const oauth_info = require("./oauth_info.json");
+const settings = require("./settings.json");
 
 const axios = require("axios");
 const download_image = (url, image_path) =>
@@ -22,7 +23,10 @@ const download_image = (url, image_path) =>
 
 const reddit = new RedditApi(oauth_info);
 
-async function assessPorn(sub = "r/Splatoon") {
+async function assessPorn() {
+
+    // moved sub to the settings.json file
+    let sub = settings.subreddit;
     console.log("Assessing...");
     var posts = await reddit.getSubreddit(sub)
         .getModqueue();

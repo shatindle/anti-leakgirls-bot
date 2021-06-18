@@ -10,6 +10,7 @@ The following are the scopes I used:
 To run the application, do the following:
 - Rename the oauth_info.sample.json to oauth_info.json
 - Fill out oauth_info.json with your application ID, secret, and scopes
+- Set the settings.json file to your subreddit (example is "r/Splatoon")
 - Run npm install
 - Run node ./index.js
 
