@@ -46,6 +46,7 @@ Next, you'll need to create a reddit application so the code can talk to reddit 
 - Give it a description.  Again, this is just for your information.
 - Set the "redirect uri" to https://not-an-aardvark.github.io/reddit-oauth-helper/ (we will change this later, we just need it set to this so we can generate a refresh token for the app).
 - Click create app
+- Leave this tab open (we'll come back to it later to change the redirect uri).
 
 You now have a reddit app for the bot to use.  Write down the client ID and secret - we will need these later.  __Protect them both__ - do not share them or post them publicly.  We need to generate a refresh token and to allow the API to talk to Reddit.
 
@@ -68,6 +69,13 @@ You now have the last piece of information you need to configure and run the bot
 - Change refreshToken to your refresh token you saved previously.
 - Change scope to "read modcontributors modposts".
 - Save the file.
+
+At this point, you'll want to go back to the tab you left open at [https://www.reddit.com/prefs/apps].
+
+- You may want to refresh this page.
+- Find the application you created and click edit.
+- Change the redirect uri to "http://127.0.0.1:65010/authorize_callback".
+- Click update app.
 
 Now you just need run the bot.
 
