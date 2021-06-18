@@ -14,4 +14,10 @@ To run the application, do the following:
 - Run npm install
 - Run node ./index.js
 
+If you're downloading this as an update, be sure to run npm install again as the dependencies may have changed.
+
 In my testing, I saw 92% of the leakgirls bot accounts banned and their posts removed.
+
+### Update: 100% success raite, 0% false positive
+
+I've altered the logic of text detection a bit.  47 out of 47 images were correctly detected as porn.
