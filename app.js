@@ -25,8 +25,6 @@ const download_image = (url, image_path) =>
 
 const reddit = new RedditApi(oauth_info);
 
-const knownPornUrls = [];
-
 async function assessPorn() {
     // moved sub to the settings.json file
     let sub = settings.subreddit;
@@ -44,11 +42,8 @@ async function assessPorn() {
         var content = submission.body;
         
         if (url) {
-            if (knownPornUrls.indexOf(url.toLowerCase()) > -1)
-                return;
-
             if (await interrogate(sub, submission, username, url, id)) {
-                knownPornUrls.push(url.toLowerCase());
+                // maybe do something someday
             }
         } else if (content) {
             var urls = bodyParser(content);
@@ -57,11 +52,8 @@ async function assessPorn() {
                 for (var i = 0; i < urls.length; i++) {
                     url = urls[i];
 
-                    if (knownPornUrls.indexOf(url.toLowerCase()) > -1)
-                        return;
-
                     if (await interrogate(sub, submission, username, url, id)) {
-                        knownPornUrls.push(url.toLowerCase());
+                        // maybe do something someday
                         break;
                     }
                 }
