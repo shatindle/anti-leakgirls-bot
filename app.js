@@ -25,13 +25,39 @@ const download_image = (url, image_path) =>
 
 const reddit = new RedditApi(oauth_info);
 
+const idCache = [];
+
+function addToCache(item) {
+    idCache.unshift(item);
+
+    while (idCache.length > 100)
+        idCache.pop();
+}
+
+function checkIdCache(item) {
+    for (var i = 0; i < idCache.length; i++) {
+        if (idCache[i] === item) {
+            var first = idCache[i];
+
+            idCache.sort(function(x,y){ return x == first ? -1 : y == first ? 1 : 0; });
+            
+            return first;
+        }
+    }
+}
+
 async function assessPorn() {
     // moved sub to the settings.json file
     let sub = settings.subreddit;
     console.log("Assessing...");
-    var posts = await reddit.getSubreddit(sub)
+    let modqueue = await reddit.getSubreddit(sub)
         .getModqueue();
         //.getSpam();
+
+    let spam = await reddit.getSubreddit(sub)
+        .getSpam();
+
+    let posts = modqueue.concat(spam);
     
     console.log("Found " + posts.length + " items in queue");
     
@@ -40,6 +66,11 @@ async function assessPorn() {
         var url = submission.url;
         var id = submission.id;
         var content = submission.body;
+
+        if (checkIdCache(id))
+            return;
+
+        addToCache(id);
         
         if (url) {
             if (await interrogate(sub, submission, username, url, id)) {
