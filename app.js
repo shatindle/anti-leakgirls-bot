@@ -25,6 +25,8 @@ const download_image = (url, image_path) =>
 
 const reddit = new RedditApi(oauth_info);
 
+const knownPornUrls = [];
+
 async function assessPorn() {
     // moved sub to the settings.json file
     let sub = settings.subreddit;
@@ -42,7 +44,12 @@ async function assessPorn() {
         var content = submission.body;
         
         if (url) {
-            await interrogate(submission, username, url, id);
+            if (knownPornUrls.indexOf(url.toLowerCase()) > -1)
+                return;
+
+            if (await interrogate(sub, submission, username, url, id)) {
+                knownPornUrls.push(url.toLowerCase());
+            }
         } else if (content) {
             var urls = bodyParser(content);
 
@@ -50,8 +57,13 @@ async function assessPorn() {
                 for (var i = 0; i < urls.length; i++) {
                     url = urls[i];
 
-                    if (await interrogate(submission, username, url, id))
+                    if (knownPornUrls.indexOf(url.toLowerCase()) > -1)
+                        return;
+
+                    if (await interrogate(sub, submission, username, url, id)) {
+                        knownPornUrls.push(url.toLowerCase());
                         break;
+                    }
                 }
             }
 
@@ -63,13 +75,27 @@ async function assessPorn() {
     setTimeout(assessPorn, 30000);
 }
 
-async function interrogate(submission, username, url, id) {
+function makeid(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+   }
+   return result;
+}
+
+async function interrogate(sub, submission, username, url, id) {
     let identified = false;
     try {
         console.log(id + " is an image");
         var lastDot = url.lastIndexOf(".");
         var extension = url.substr(lastDot, url.length - lastDot);
-        var imageFile =  "./possiblePorn/" + id + extension;
+
+        if (!extension.match(/^\.[a-zA-Z]+$/))
+            return identified;
+
+        var imageFile =  "./possiblePorn/image-" + makeid(10) + extension;
         await download_image(url, imageFile);
 
         try {
@@ -83,7 +109,7 @@ async function interrogate(submission, username, url, id) {
             } else {
                 console.log(id + " is probably not porn");
             }
-        } catch {
+        } catch (ex) {
             console.log(id + " something went wrong when processing this ID");
         }
 
