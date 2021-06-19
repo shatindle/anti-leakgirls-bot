@@ -40,27 +40,31 @@ async function assessPorn() {
         var id = submission.id;
         
         if (url) {
-            console.log(id + " is an image");
-            var lastDot = url.lastIndexOf(".");
-            var extension = url.substr(lastDot, url.length - lastDot);
-            var imageFile =  "./possiblePorn/" + id + extension;
-            await download_image(url, imageFile);
-
             try {
-                var isporn = await run(imageFile);
-
-                if (isporn) {
-                    console.log(id + " is porn - removing and banning");
-                    await submission.remove();
-                    await reddit.getSubreddit(sub).banUser({name: username, banReason: 'No NSFW content', banNote: "porn" });
-                } else {
-                    console.log(id + " is probably not porn");
+                console.log(id + " is an image");
+                var lastDot = url.lastIndexOf(".");
+                var extension = url.substr(lastDot, url.length - lastDot);
+                var imageFile =  "./possiblePorn/" + id + extension;
+                await download_image(url, imageFile);
+    
+                try {
+                    var isporn = await run(imageFile);
+    
+                    if (isporn) {
+                        console.log(id + " is porn - removing and banning");
+                        await submission.remove();
+                        await reddit.getSubreddit(sub).banUser({name: username, banReason: 'No NSFW content', banNote: "porn" });
+                    } else {
+                        console.log(id + " is probably not porn");
+                    }
+                } catch {
+                    console.log(id + " something went wrong when processing this ID");
                 }
-            } catch {
-                console.log(id + " something went wrong when processing this ID");
+    
+                fs.unlinkSync(imageFile);
+            } catch (errorWithExtraction) {
+                console.log("Error pulling data: " + errorWithExtraction);
             }
-
-            await fs.unlinkSync(imageFile);
         } else {
             console.log(id + " is not an image");
         }
@@ -87,8 +91,8 @@ async function run(file) {
     extracted = await extractText(newFile2);
     porn = isPorn(extracted);
 
-    await fs.unlinkSync(newFile);
-    await fs.unlinkSync(newFile2);
+    fs.unlinkSync(newFile);
+    fs.unlinkSync(newFile2);
 
     return porn;
 }
