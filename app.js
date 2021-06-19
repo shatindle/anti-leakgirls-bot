@@ -63,6 +63,17 @@ async function assessPorn() {
     
     await asyncForEach(posts, async (submission) => {
         var username = submission.author.name;
+        try {
+            var isBanned =  await reddit.getSubreddit(sub).getBannedUsers({ name: username });
+
+            for (var i = 0; i < isBanned.length; i++) {
+                if (isBanned[i].name === username)
+                    return;
+            }
+        } catch {
+            // keep going I guess
+        }
+
         var url = submission.url;
         var id = submission.id;
         var content = submission.body;
