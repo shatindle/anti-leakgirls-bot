@@ -30,8 +30,8 @@ async function assessPorn() {
     let sub = settings.subreddit;
     console.log("Assessing...");
     var posts = await reddit.getSubreddit(sub)
-        //.getModqueue();
-        .getSpam();
+        .getModqueue();
+        //.getSpam();
     
     console.log("Found " + posts.length + " items in queue");
     
