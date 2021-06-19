@@ -63,6 +63,15 @@ async function assessPorn() {
     
     await asyncForEach(posts, async (submission) => {
         var username = submission.author.name;
+        var url = submission.url;
+        var id = submission.id;
+        var content = submission.body;
+
+        if (checkIdCache(id))
+            return;
+
+        addToCache(id);
+
         try {
             var isBanned =  await reddit.getSubreddit(sub).getBannedUsers({ name: username });
 
@@ -73,15 +82,6 @@ async function assessPorn() {
         } catch {
             // keep going I guess
         }
-
-        var url = submission.url;
-        var id = submission.id;
-        var content = submission.body;
-
-        if (checkIdCache(id))
-            return;
-
-        addToCache(id);
         
         if (url) {
             if (await interrogate(sub, submission, username, url, id)) {
