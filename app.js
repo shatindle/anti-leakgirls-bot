@@ -2,6 +2,7 @@ const isPorn = require("./pornDetection").isPorn;
 const extractText = require("./extractText");
 const resizeImage = require("./resizeImage");
 const greyscaleImage = require("./greyscaleImage");
+const bodyParser = require("./bodyParser");
 const axios = require("axios");
 const fs = require('fs');
 const RedditApi = require("snoowrap");
@@ -38,40 +39,60 @@ async function assessPorn() {
         var username = submission.author.name;
         var url = submission.url;
         var id = submission.id;
+        var content = submission.body;
         
         if (url) {
-            try {
-                console.log(id + " is an image");
-                var lastDot = url.lastIndexOf(".");
-                var extension = url.substr(lastDot, url.length - lastDot);
-                var imageFile =  "./possiblePorn/" + id + extension;
-                await download_image(url, imageFile);
-    
-                try {
-                    var isporn = await run(imageFile);
-    
-                    if (isporn) {
-                        console.log(id + " is porn - removing and banning");
-                        await submission.remove();
-                        await reddit.getSubreddit(sub).banUser({name: username, banReason: 'No NSFW content', banNote: "porn" });
-                    } else {
-                        console.log(id + " is probably not porn");
-                    }
-                } catch {
-                    console.log(id + " something went wrong when processing this ID");
+            await interrogate(submission, username, url, id);
+        } else if (content) {
+            var urls = bodyParser(content);
+
+            if (urls.length) {
+                for (var i = 0; i < urls.length; i++) {
+                    url = urls[i];
+
+                    if (await interrogate(submission, username, url, id))
+                        break;
                 }
-    
-                fs.unlinkSync(imageFile);
-            } catch (errorWithExtraction) {
-                console.log("Error pulling data: " + errorWithExtraction);
             }
-        } else {
+
             console.log(id + " is not an image");
         }
         
     });
 
     setTimeout(assessPorn, 30000);
+}
+
+async function interrogate(submission, username, url, id) {
+    let identified = false;
+    try {
+        console.log(id + " is an image");
+        var lastDot = url.lastIndexOf(".");
+        var extension = url.substr(lastDot, url.length - lastDot);
+        var imageFile =  "./possiblePorn/" + id + extension;
+        await download_image(url, imageFile);
+
+        try {
+            var isporn = await run(imageFile);
+
+            if (isporn) {
+                console.log(id + " is porn - removing and banning");
+                await submission.remove();
+                await reddit.getSubreddit(sub).banUser({name: username, banReason: 'No NSFW content', banNote: "porn" });
+                identified = true;
+            } else {
+                console.log(id + " is probably not porn");
+            }
+        } catch {
+            console.log(id + " something went wrong when processing this ID");
+        }
+
+        fs.unlinkSync(imageFile);
+    } catch (errorWithExtraction) {
+        console.log("Error pulling data: " + errorWithExtraction);
+    }
+
+    return identified;
 }
 
 async function asyncForEach(array, callback) {
