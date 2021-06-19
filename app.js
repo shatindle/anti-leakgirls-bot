@@ -72,7 +72,7 @@ async function assessPorn() {
         
     });
 
-    setTimeout(assessPorn, 30000);
+    setTimeout(assessPorn, 10000);
 }
 
 function makeid(length) {
